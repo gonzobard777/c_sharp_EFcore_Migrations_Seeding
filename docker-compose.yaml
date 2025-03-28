@@ -1,0 +1,10 @@
+﻿services:
+  db_postgres:
+    container_name: ef_core_migrations_seeding
+    image: postgres:17.4
+    ports:
+      - "6172:5432"
+    environment:
+      - POSTGRES_DB=db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=12345
