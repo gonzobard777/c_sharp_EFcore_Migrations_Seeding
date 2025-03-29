@@ -1,4 +1,6 @@
-﻿namespace WebApi;
+﻿using Infrastructure;
+
+namespace WebApi;
 
 public class Startup
 {
@@ -11,6 +13,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddInfrastructureDependencies(Configuration);
         services.AddControllers();
         services.AddCors(options => options.AddPolicy("CorsPolicy", policyBuilder =>
         {
