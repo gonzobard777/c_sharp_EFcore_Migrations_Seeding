@@ -31,14 +31,13 @@ public class Program
                 try
                 {
                     var migrator = dbContext.GetService<IMigrator>();
-                    var pendingMigrations = dbContext.Database.GetPendingMigrations();
-                    Console.WriteLine($"Отложенных миграций: {pendingMigrations.Count()}шт.");
-                    foreach (var migrationName in pendingMigrations)
+                    var pendingMigrationNames = dbContext.Database.GetPendingMigrations().ToList();
+                    Console.WriteLine($"Отложенных миграций: {pendingMigrationNames.Count}шт.");
+                    foreach (var name in pendingMigrationNames)
                     {
                         // TODO: Do things before each migration.
-                        // TODO: Access database using db.Database.GetDbConnection()
-                        Console.WriteLine($"-   start Migration -> {migrationName}");
-                        migrator.Migrate(migrationName);
+                        Console.WriteLine($"start Migration -> {name}");
+                        migrator.Migrate(name);
                         // TODO: Do things after each migration.
                     }
                 }
