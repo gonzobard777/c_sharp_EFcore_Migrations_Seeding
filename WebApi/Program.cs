@@ -1,13 +1,6 @@
-using Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.AspNetCore;
 
 namespace WebApi;
-
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore;
-using Microsoft.Extensions.Hosting;
 
 public class Program
 {
@@ -19,7 +12,7 @@ public class Program
             .CreateDefaultBuilder(args)
             .UseStartup<Startup>()
             .Build();
-        
+
         host.Run();
     }
 
