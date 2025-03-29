@@ -14,8 +14,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var connStr = Configuration[ConnectionStrings.DBConnectionString] ?? "";
-        services.AddInfrastructureDependencies(connStr);
+        services.AddInfrastructureDependencies(Configuration.GetConnectionString(ConnectionStrings.DBConnectionString));
         services.AddControllers();
         services.AddCors(options => options.AddPolicy("CorsPolicy", policyBuilder =>
         {

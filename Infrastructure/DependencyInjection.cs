@@ -5,7 +5,7 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, string connStr)
+    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, string? connStr)
     {
         PrintConnectionString(connStr);
 
@@ -20,8 +20,11 @@ public static class DependencyInjection
     /// Распечатать строку подключения к БД.
     /// Постараться скрыть пароль.
     /// </summary>
-    private static void PrintConnectionString(string connStr)
+    private static void PrintConnectionString(string? connStr)
     {
+        if (connStr == null)
+            return;
+
         const string pattern = "password=";
         var printStr = connStr;
         var pos = connStr.IndexOf(pattern, StringComparison.Ordinal);
