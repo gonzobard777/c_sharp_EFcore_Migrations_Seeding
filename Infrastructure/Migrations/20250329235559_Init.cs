@@ -23,6 +23,19 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK.Author", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Login = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK.User", x => x.Id);
+                });
         }
 
         /// <inheritdoc />
@@ -30,6 +43,9 @@ namespace Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Author");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }

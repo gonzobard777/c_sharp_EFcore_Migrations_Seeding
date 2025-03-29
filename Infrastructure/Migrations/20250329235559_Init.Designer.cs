@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250329195523_Init")]
+    [Migration("20250329235559_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -40,6 +40,24 @@ namespace Infrastructure.Migrations
                         .HasName("PK.Author");
 
                     b.ToTable("Author", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.DBEntities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id")
+                        .HasName("PK.User");
+
+                    b.ToTable("User", (string)null);
                 });
 #pragma warning restore 612, 618
         }

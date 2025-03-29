@@ -4,11 +4,11 @@ public class Init : IMigrationAction<AppDbContext>
 {
     public void BeforeMigration(AppDbContext dbContext)
     {
-        Console.WriteLine("BeforeMigration");
+        Console.WriteLine("  BeforeMigration - Init action");
     }
 
     public void AfterMigration(AppDbContext dbContext)
     {
-        Console.WriteLine("AfterMigration");
+        Console.WriteLine("  AfterMigration - Init action");
     }
 }

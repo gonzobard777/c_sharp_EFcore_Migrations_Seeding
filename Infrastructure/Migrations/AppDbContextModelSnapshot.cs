@@ -38,6 +38,24 @@ namespace Infrastructure.Migrations
 
                     b.ToTable("Author", (string)null);
                 });
+
+            modelBuilder.Entity("Domain.DBEntities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id")
+                        .HasName("PK.User");
+
+                    b.ToTable("User", (string)null);
+                });
 #pragma warning restore 612, 618
         }
     }

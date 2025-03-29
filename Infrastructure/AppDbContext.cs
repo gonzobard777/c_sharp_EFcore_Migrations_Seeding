@@ -6,6 +6,7 @@ namespace Infrastructure;
 public class AppDbContext : DbContext
 {
     public DbSet<Author> Authors { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public AppDbContext()
     {
@@ -30,6 +31,12 @@ public class AppDbContext : DbContext
         {
             entity.ToTable("Author");
             entity.HasKey(e => e.Id).HasName("PK.Author");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("User");
+            entity.HasKey(e => e.Id).HasName("PK.User");
         });
     }
 }

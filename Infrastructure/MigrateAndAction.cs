@@ -15,30 +15,43 @@ public static class DbContextExtensions
     /// </summary>
     public static void MigrateAndAction(this AppDbContext dbContext)
     {
-        Console.WriteLine("==========================");
+        Console.WriteLine("\n==========================");
         Console.WriteLine("=== Migrations Start");
         try
         {
             var migrator = dbContext.GetService<IMigrator>();
             var pendingMigrationNames = dbContext.Database.GetPendingMigrations().ToList();
-            Console.WriteLine($"Отложенных миграций: {pendingMigrationNames.Count}шт.");
-            foreach (var name in pendingMigrationNames)
+            Console.WriteLine($"\nОтложенных миграций: {pendingMigrationNames.Count}шт.");
+            foreach (var migrationName in pendingMigrationNames)
             {
-                var action = GetAction(name);
+                Console.WriteLine($"\n-- Start migration \"{migrationName}\" ------------");
+
+                var actionTypeName = GetActionTypeName(migrationName);
+                var action = GetAction(actionTypeName);
 
                 // Действие перед миграцией.
-                action?.BeforeMigration(dbContext);
+                if (action != null)
+                {
+                    Console.WriteLine($"Run before action: {actionTypeName}");
+                    action.BeforeMigration(dbContext);
+                }
 
                 // Накат миграции.
-                Console.WriteLine($"apply: \"{name}\"");
-                migrator.Migrate(name);
-                Console.WriteLine($"done: \"{name}\"");
+                Console.WriteLine($"Apply migration: \"{migrationName}\"");
+                migrator.Migrate(migrationName);
+                Console.WriteLine($"Done migration: \"{migrationName}\"");
 
                 // Действие после миграции.
-                action?.AfterMigration(dbContext);
+                if (action != null)
+                {
+                    Console.WriteLine($"Run after action: {actionTypeName}");
+                    action.AfterMigration(dbContext);
+                }
+
+                Console.WriteLine($"-- End migration \"{migrationName}\" ------------\n");
             }
 
-            // TODO: Действие после успешного выполнения всех миграций и связанных действий.
+            // TODO: Действие после успешного выполнения всех миграций.
         }
         catch (Exception e)
         {
@@ -48,24 +61,43 @@ public static class DbContextExtensions
         }
 
         Console.WriteLine("=== Migrations End");
-        Console.WriteLine("==========================");
+        Console.WriteLine("==========================\n");
     }
 
-    private static IMigrationAction<AppDbContext>? GetAction(string? migrationName)
+    /// <summary>
+    /// Действие - это класс, который:
+    ///   1. Имеет название - actionName, совпадающее со смысловой частью названия миграции.
+    ///      Смотри метод GetActionTypeName.
+    ///   2. Его тип можно найти по actionTypeName: ActionsNamespace + "." + actionName
+    ///      Смотри метод GetActionTypeName.
+    ///   3. Реализует интерфейс IMigrationAction
+    /// </summary>
+    private static IMigrationAction<AppDbContext>? GetAction(string? actionTypeName)
     {
-        IMigrationAction<AppDbContext>? action = null;
-        if (migrationName == null) return action;
-
-        var actionName = migrationName.Substring(migrationName.IndexOf('_') + 1);
-        var actionType = typeof(DbContextExtensions).Assembly.GetType(ActionsNamespace + "." + actionName);
+        if (actionTypeName == null) return null;
+        var actionType = typeof(DbContextExtensions).Assembly.GetType(actionTypeName);
         if (
             actionType != null &&
             actionType.GetInterfaces().Any(x =>
                 x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IMigrationAction<>))
         )
-            action = Activator.CreateInstance(actionType) as IMigrationAction<AppDbContext>;
+            return Activator.CreateInstance(actionType) as IMigrationAction<AppDbContext>;
 
-        return action;
+        return null;
+    }
+
+    /// <summary>
+    /// Получить имя типа Действия.
+    /// Ожидается, что миграция имеет название вида: 20250329195523_Init
+    /// Соответственно смысловая часть здесь "Init" - это и есть actionName.
+    /// А имя типа получается прибавлением namespace.
+    /// </summary>
+    private static string? GetActionTypeName(string? migrationName)
+    {
+        if (migrationName == null) return null;
+        var actionName = migrationName.Substring(migrationName.IndexOf('_') + 1);
+        if (actionName.Length == 0) return null;
+        return ActionsNamespace + "." + actionName;
     }
 }
 
