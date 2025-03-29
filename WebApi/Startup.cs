@@ -27,8 +27,13 @@ public class Startup
         }));
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment _)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        // Миграции перед каждым стартом приложения.
+        using var scope = app.ApplicationServices.CreateScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        dbContext.MigrateAndAction();
+        
         app.UseRouting();
         app.UseCors("policy");
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

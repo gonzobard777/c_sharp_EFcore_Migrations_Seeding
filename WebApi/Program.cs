@@ -19,41 +19,7 @@ public class Program
             .CreateDefaultBuilder(args)
             .UseStartup<Startup>()
             .Build();
-
-        // Миграции.
-        Console.WriteLine("==========================");
-        Console.WriteLine("=== Migrations Start");
-        using (var scope = host.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            using (var dbContext = services.GetRequiredService<AppDbContext>())
-            {
-                try
-                {
-                    var migrator = dbContext.GetService<IMigrator>();
-                    var pendingMigrationNames = dbContext.Database.GetPendingMigrations().ToList();
-                    Console.WriteLine($"Отложенных миграций: {pendingMigrationNames.Count}шт.");
-                    foreach (var name in pendingMigrationNames)
-                    {
-                        // TODO: Do things before each migration.
-                        Console.WriteLine($"start Migration -> {name}");
-                        migrator.Migrate(name);
-                        // TODO: Do things after each migration.
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Ошибка миграции");
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-
-        Console.WriteLine("=== Migrations End");
-        Console.WriteLine("==========================");
-
-
+        
         host.Run();
     }
 
