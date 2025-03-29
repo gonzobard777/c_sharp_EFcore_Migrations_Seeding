@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        Console.WriteLine("AppDbContext.OnModelCreating");
         modelBuilder.Entity<Author>(entity =>
         {
             entity.ToTable("Author");
