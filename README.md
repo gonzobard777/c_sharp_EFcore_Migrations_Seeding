@@ -2,8 +2,8 @@
 
 ## Создать миграцию
 
-1. В терминале переходим в корень проекта `Infrastructure`
-2. Выполняем команду:
+1. Открыть в терминале корень проекта `Infrastructure`
+2. Выполнить команду:
 
 ```shell
 dotnet ef migrations add Init --startup-project ../WebApi/WebApi.csproj
