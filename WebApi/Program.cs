@@ -1,5 +1,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebApi;
 
@@ -19,6 +21,8 @@ public class Program
             .Build();
 
         // Миграции.
+        Console.WriteLine("==========================");
+        Console.WriteLine("=== Migrations Start");
         using (var scope = host.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
@@ -26,8 +30,17 @@ public class Program
             {
                 try
                 {
-                    Console.WriteLine("-   WebApi -> Database.Migrate()");
-                    dbContext.Database.Migrate();
+                    var migrator = dbContext.GetService<IMigrator>();
+                    var pendingMigrations = dbContext.Database.GetPendingMigrations();
+                    Console.WriteLine($"Отложенных миграций: {pendingMigrations.Count()}шт.");
+                    foreach (var migrationName in pendingMigrations)
+                    {
+                        // TODO: Do things before each migration.
+                        // TODO: Access database using db.Database.GetDbConnection()
+                        Console.WriteLine($"-   start Migration -> {migrationName}");
+                        migrator.Migrate(migrationName);
+                        // TODO: Do things after each migration.
+                    }
                 }
                 catch (Exception e)
                 {
@@ -37,6 +50,10 @@ public class Program
                 }
             }
         }
+
+        Console.WriteLine("=== Migrations End");
+        Console.WriteLine("==========================");
+
 
         host.Run();
     }
