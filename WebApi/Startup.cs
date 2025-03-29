@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using WebApi.Helpers;
 
 namespace WebApi;
 
@@ -13,7 +14,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddInfrastructureDependencies(Configuration);
+        var connStr = Configuration[ConnectionStrings.DBConnectionString] ?? "";
+        services.AddInfrastructureDependencies(connStr);
         services.AddControllers();
         services.AddCors(options => options.AddPolicy("CorsPolicy", policyBuilder =>
         {

@@ -7,13 +7,12 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, string connStr)
     {
-        var connectionString = configuration[ConnectionStrings.DBConnectionString];
-        Console.WriteLine($"db: {connectionString}");
+        Console.WriteLine($"db.UseNpgsql: {connStr}");
         
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString)
+            options.UseNpgsql(connStr)
         );
         return services;
     }
