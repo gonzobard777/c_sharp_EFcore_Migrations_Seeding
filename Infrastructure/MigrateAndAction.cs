@@ -16,15 +16,18 @@ public static class DbContextExtensions
     public static void MigrateAndAction(this AppDbContext dbContext)
     {
         Console.WriteLine("\n==========================");
-        Console.WriteLine("=== Migrations Start");
+        Console.WriteLine("=== Migrations Start\n");
         try
         {
             var migrator = dbContext.GetService<IMigrator>();
             var pendingMigrationNames = dbContext.Database.GetPendingMigrations().ToList();
-            Console.WriteLine($"\nОтложенных миграций: {pendingMigrationNames.Count}шт.");
-            foreach (var migrationName in pendingMigrationNames)
+            Console.WriteLine($"\nОтложенных миграций: {pendingMigrationNames.Count}шт.\n");
+            for (int i = 0; i < pendingMigrationNames.Count; i++)
             {
-                Console.WriteLine($"\n-- Start migration \"{migrationName}\" ------------");
+                var count = i + 1;
+                var migrationName = pendingMigrationNames[i];
+
+                Console.WriteLine($"-- [{count}] Start migration \"{migrationName}\" ------------");
 
                 var actionTypeName = GetActionTypeName(migrationName);
                 var action = GetAction(actionTypeName);
@@ -48,7 +51,7 @@ public static class DbContextExtensions
                     action.AfterMigration(dbContext);
                 }
 
-                Console.WriteLine($"-- End migration \"{migrationName}\" ------------\n");
+                Console.WriteLine($"-- [{count}] End migration \"{migrationName}\" ------------\n");
             }
 
             // TODO: Действие после успешного выполнения всех миграций.
