@@ -12,6 +12,10 @@ public class AddAdmin : IMigrationAction<AppDbContext>
 
     public void AfterMigration(AppDbContext dbContext)
     {
+        // var existedAdmin = dbContext
+        //     .Users.AsNoTracking()
+        //     .FirstOrDefault(x => x.Login == AdminLogin);
+
         var existedAdmin = dbContext.Database.SqlQueryRaw<UserDbo>(@$"
             SELECT ""Id""
             FROM ""User"" as x
