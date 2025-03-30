@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure;
 
-public static class DbContextExtensions
+public static class AppDbContextExtensions
 {
     // namespace, к которому принадлежат все связанные действия для миграций.
     private const string ActionsNamespace = "Infrastructure.MigrationsActions";
@@ -21,7 +21,7 @@ public static class DbContextExtensions
         {
             var migrator = dbContext.GetService<IMigrator>();
             var pendingMigrationNames = dbContext.Database.GetPendingMigrations().ToList();
-            Console.WriteLine($"\nОтложенных миграций: {pendingMigrationNames.Count}шт.\n");
+            Console.WriteLine($"\nОтложенных миграций: {pendingMigrationNames.Count}\n");
             for (int i = 0; i < pendingMigrationNames.Count; i++)
             {
                 var count = i + 1;
@@ -78,7 +78,7 @@ public static class DbContextExtensions
     private static IMigrationAction<AppDbContext>? GetAction(string? actionTypeName)
     {
         if (actionTypeName == null) return null;
-        var actionType = typeof(DbContextExtensions).Assembly.GetType(actionTypeName);
+        var actionType = typeof(AppDbContextExtensions).Assembly.GetType(actionTypeName);
         if (
             actionType != null &&
             actionType.GetInterfaces().Any(x =>

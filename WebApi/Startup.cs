@@ -29,7 +29,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // Миграции перед каждым стартом приложения.
+        // Накатить отложенные миграции перед каждым стартом приложения.
         using var scope = app.ApplicationServices.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         dbContext.MigrateAndAction();
