@@ -13,7 +13,7 @@ public static class DbContextExtensions
     /// Последовательно накатывает на БД миграции, которые еще не были накачены,
     /// и ПОСЛЕ каждой миграции выполняет связанное с ней действие, если оно было предусмотрено.
     /// </summary>
-    public static void MigrateAndAction(this AppDbContext dbContext)
+    public static async Task MigrateAndAction(this AppDbContext dbContext)
     {
         Console.WriteLine("\n==========================");
         Console.WriteLine("=== Migrations Start");
@@ -33,7 +33,7 @@ public static class DbContextExtensions
                 if (action != null)
                 {
                     Console.WriteLine($"Run before action: {actionTypeName}");
-                    action.BeforeMigration(dbContext);
+                    await action.BeforeMigration(dbContext);
                 }
 
                 // Накат миграции.
@@ -45,7 +45,7 @@ public static class DbContextExtensions
                 if (action != null)
                 {
                     Console.WriteLine($"Run after action: {actionTypeName}");
-                    action.AfterMigration(dbContext);
+                    await action.AfterMigration(dbContext);
                 }
 
                 Console.WriteLine($"-- End migration \"{migrationName}\" ------------\n");
@@ -103,6 +103,6 @@ public static class DbContextExtensions
 
 public interface IMigrationAction<TDbContext> where TDbContext : DbContext
 {
-    void BeforeMigration(TDbContext dbContext);
-    void AfterMigration(TDbContext dbContext);
+    Task BeforeMigration(TDbContext dbContext);
+    Task AfterMigration(TDbContext dbContext);
 }
