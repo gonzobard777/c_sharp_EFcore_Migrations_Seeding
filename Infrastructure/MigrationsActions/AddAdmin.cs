@@ -1,62 +1,46 @@
-﻿using Domain.DBEntities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.MigrationsActions;
 
 public class AddAdmin : IMigrationAction<AppDbContext>
 {
-    public async Task BeforeMigration(AppDbContext dbContext)
+    private const string AdminLogin = "admin";
+
+    public void BeforeMigration(AppDbContext dbContext)
     {
     }
 
-    public async Task AfterMigration(AppDbContext dbContext)
+    public void AfterMigration(AppDbContext dbContext)
     {
-        var login = "admin";
+        var existedAdmin = dbContext.Database.SqlQueryRaw<UserDbo>(@$"
+            SELECT ""Id""
+            FROM ""User"" as x
+            WHERE x.""Login"" LIKE '%{AdminLogin}%'
+        ").AsNoTracking().FirstOrDefault();
 
-        // var existedAdmin = dbContext.Database.SqlQuery<List<UserDbo>>(@$"
-        //     SELECT 
-        //         ""Id"", ""Login""
-        //     FROM ""User"" as x
-        // ");
-        
-        // var existedAdmin = dbContext.Database.SqlQuery<List<UserDbo>>(@$"
-        //     SELECT 
-        //         ""Id"", ""Login""
-        //     FROM ""User"" as x
-        // ").AsNoTracking().ToList();
-        
-        // var existedAdmin = dbContext.Database.SqlQueryRaw<UserDbo>(@$"
-        //     SELECT 
-        //         ""Id"", ""Login""
-        //     FROM ""User"" as x
-        //     WHERE x.""Login"" LIKE '%{login}%'
-        // ").AsNoTracking().ToList();
-
-        
-        
-        // Console.WriteLine();
-        
-        // var existedAdmin = dbContext
-        //     .Users.AsNoTracking()
-        //     .FirstOrDefault(user => user.Login == "admin");
-        // if (existedAdmin == null)
-        // {
-        //     // Создать
-        //     var admin = new User { Login = "admin", Salt = "Create" };
-        //     dbContext.Users.Add(admin);
-        //     dbContext.SaveChanges();
-        // }
-        // else
-        // {
-        //     // Изменить
-        //     existedAdmin.Salt = "Update";
-        //     dbContext.SaveChanges();
-        // }
+        if (existedAdmin == null)
+        {
+            // Создать.
+            dbContext.Database.ExecuteSqlRaw(@$"
+                INSERT INTO ""User"" VALUES 
+                (DEFAULT, '{AdminLogin}', 'by Creating')
+            ");
+        }
+        else
+        {
+            // Изменить.
+            dbContext.Database.ExecuteSqlRaw($@"
+                UPDATE ""User"" 
+                SET ""Salt"" = 'by Udating' 
+                WHERE ""Id"" = {existedAdmin.Id}
+            ");
+        }
     }
 }
 
 class UserDbo
 {
     public int Id { get; set; }
-    public string Login { get; set; }
+    // public string Login { get; set; }
+    // public string Salt { get; set; }
 }
