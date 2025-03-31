@@ -22,8 +22,13 @@ public static class DependencyInjection
     /// </summary>
     private static void PrintConnectionString(string? connStr)
     {
+        void Print(string? printStr) => Console.WriteLine($"db connection: {printStr}");
+
         if (connStr == null)
+        {
+            Print("No connection string");
             return;
+        }
 
         const string pattern = "password=";
         var printStr = connStr;
@@ -44,6 +49,6 @@ public static class DependencyInjection
                 printStr = connStr.Replace(password, "***");
         }
 
-        Console.WriteLine($"db connection: {printStr}");
+        Print(printStr);
     }
 }
