@@ -35,20 +35,48 @@ public static class AppDbContextExtensions
                 // Действие перед миграцией.
                 if (action != null)
                 {
-                    Console.WriteLine($"Run before action: {actionTypeName}");
+                    Console.WriteLine($"\nДействие ПЕРЕД миграцией: {actionTypeName}\n");
                     action.BeforeMigration(dbContext);
                 }
 
                 // Накат миграции.
-                Console.WriteLine($"Apply migration: \"{migrationName}\"");
+                Console.WriteLine($"Накат миграции: \"{migrationName}\"\n");
                 migrator.Migrate(migrationName);
-                Console.WriteLine($"Done migration: \"{migrationName}\"");
+                Console.WriteLine($"\nУспешно накатилась миграция: \"{migrationName}\"\n");
 
                 // Действие после миграции.
                 if (action != null)
                 {
-                    Console.WriteLine($"Run after action: {actionTypeName}");
-                    action.AfterMigration(dbContext);
+                    try
+                    {
+                        Console.WriteLine($"Действие ПОСЛЕ миграции: {actionTypeName}\n");
+                        action.AfterMigration(dbContext);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("\nОшибка действия ПОСЛЕ миграции\n");
+                        var successfulMigrations = dbContext.Database.GetAppliedMigrations().ToList();
+                        // Если миграция успешно накатилась.
+                        // Вообще говоря, миграция точно накатилась, но проверить на всякий случай надо.
+                        if (migrationName == successfulMigrations.LastOrDefault())
+                        {
+                            // Если упало после самой первой миграции.
+                            var secondAtLast = successfulMigrations.ElementAtOrDefault(successfulMigrations.Count - 2);
+                            if (secondAtLast == null) // только у первой миграции нет предыдущей миграции
+                            {
+                                Console.WriteLine("\nОткат на состояние БД без миграций\n");
+                                migrator.Migrate(Migration.InitialDatabase);
+                            }
+                            else
+                            {
+                                // Чтобы следующий раз миграция накатались повторно и действие снова попыталось выполниться.
+                                Console.WriteLine($"\nОткат на предыдущую миграцию: {secondAtLast}\n");
+                                migrator.Migrate(secondAtLast);
+                            }
+                        }
+
+                        throw;
+                    }
                 }
 
                 Console.WriteLine($"-- [{count}] End migration \"{migrationName}\" ------------\n");
@@ -58,7 +86,7 @@ public static class AppDbContextExtensions
         }
         catch (Exception e)
         {
-            Console.WriteLine("Ошибка миграции");
+            Console.WriteLine("\nОшибка либо в миграции, либо в действии\n");
             Console.WriteLine(e);
             throw;
         }
