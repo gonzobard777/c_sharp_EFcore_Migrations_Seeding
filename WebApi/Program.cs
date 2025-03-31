@@ -16,7 +16,8 @@ public class Program
         host.Run();
     }
 
-    // Миграции. EF Core uses this method at design time to access the DbContext
+    // Метод вызывается при выполнении консольной команды добавления миграции:
+    //  dotnet ef migrations add ...
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
         Console.WriteLine($"-   WebApi -> run CreateHostBuilder(args[{args.Length}]): {string.Join(",", args.ToArray())}");
