@@ -25,7 +25,7 @@ public static class AppDbContextExtensions
             for (int i = 0; i < pendingMigrationNames.Count; i++)
             {
                 var count = i + 1;
-                var migrationName = pendingMigrationNames[i];
+                var migrationName = pendingMigrationNames[i]; // ожидается формат вида: "20250329195523_Init"
 
                 Console.WriteLine($"-- [{count}] Start migration \"{migrationName}\" ------------");
 
@@ -69,7 +69,9 @@ public static class AppDbContextExtensions
                             }
                             else
                             {
-                                // Чтобы следующий раз миграция накатались повторно и действие снова попыталось выполниться.
+                                // Чтобы следующий раз эта миграция снова накатались
+                                // и самое главное действие снова попыталось выполниться,
+                                // ведь упало на действии.
                                 Console.WriteLine($"\nОткат на предыдущую миграцию: {secondAtLast}\n");
                                 migrator.Migrate(secondAtLast);
                             }
